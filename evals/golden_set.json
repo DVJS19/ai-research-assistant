@@ -1,0 +1,62 @@
+[
+  {
+    "id": "q001",
+    "topic": "What is LangGraph and how does it differ from LangChain?",
+    "expected_topics": ["directed graph", "state management", "nodes", "edges", "checkpointing"],
+    "min_confidence": 0.7
+  },
+  {
+    "id": "q002",
+    "topic": "How does RAG (Retrieval Augmented Generation) work?",
+    "expected_topics": ["retrieval", "embedding", "vector search", "generation", "context"],
+    "min_confidence": 0.75
+  },
+  {
+    "id": "q003",
+    "topic": "What is the ReAct agent pattern?",
+    "expected_topics": ["reason", "act", "observation", "tool", "loop"],
+    "min_confidence": 0.7
+  },
+  {
+    "id": "q004",
+    "topic": "What is Little's Law and how is it used in system design?",
+    "expected_topics": ["N = lambda x W", "arrival rate", "service time", "concurrency", "capacity"],
+    "min_confidence": 0.75
+  },
+  {
+    "id": "q005",
+    "topic": "What is vLLM and how does PagedAttention work?",
+    "expected_topics": ["inference", "GPU", "KV cache", "continuous batching", "throughput"],
+    "min_confidence": 0.65
+  },
+  {
+    "id": "q006",
+    "topic": "How does hybrid search combine BM25 and vector search?",
+    "expected_topics": ["keyword", "semantic", "reciprocal rank fusion", "BM25", "embedding"],
+    "min_confidence": 0.7
+  },
+  {
+    "id": "q007",
+    "topic": "What is the difference between availability and fault tolerance?",
+    "expected_topics": ["uptime", "redundancy", "failover", "recovery time", "availability zone"],
+    "min_confidence": 0.7
+  },
+  {
+    "id": "q008",
+    "topic": "How does LiteLLM handle model routing and fallbacks?",
+    "expected_topics": ["YAML config", "model alias", "circuit breaker", "fallback", "routing"],
+    "min_confidence": 0.7
+  },
+  {
+    "id": "q009",
+    "topic": "What is a confidence score in AI systems and how is it calculated?",
+    "expected_topics": ["heuristic", "LLM-as-judge", "threshold", "composite", "calibration"],
+    "min_confidence": 0.65
+  },
+  {
+    "id": "q010",
+    "topic": "What are Availability Zones in AWS and why are they important?",
+    "expected_topics": ["data centre", "region", "fault isolation", "multi-AZ", "failover"],
+    "min_confidence": 0.7
+  }
+]
