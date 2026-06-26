@@ -2,8 +2,8 @@
 Central config — all settings loaded from .env via pydantic-settings.
 Import this anywhere with: from app.config import settings
 """
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
 
 
 class Settings(BaseSettings):
@@ -11,7 +11,7 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
-        extra="ignore",          # ignore unknown env vars
+        extra="ignore",  # ignore unknown env vars
     )
 
     # ── LLM providers ─────────────────────────────────────────────────────────

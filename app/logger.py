@@ -7,8 +7,11 @@ Usage:
     log = get_logger(__name__)
     log.info("ingestion_completed", doc_id="abc", vectors=42, cost_usd=0.003)
 """
+
 import logging
+
 import structlog
+
 from app.config import settings
 
 
@@ -22,7 +25,7 @@ def setup_logging() -> None:
             structlog.processors.add_log_level,
             structlog.processors.TimeStamper(fmt="iso"),
             structlog.processors.StackInfoRenderer(),
-            structlog.processors.JSONRenderer(),   # output as JSON
+            structlog.processors.JSONRenderer(),  # output as JSON
         ],
         wrapper_class=structlog.make_filtering_bound_logger(log_level),
         context_class=dict,

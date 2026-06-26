@@ -3,13 +3,15 @@ FastAPI entry point.
 Phase 1: health check + placeholder /research endpoint.
 Phase 3: /research calls the LangGraph agent.
 """
+
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from app.config import settings
-from app.logger import setup_logging, get_logger
+from app.logger import get_logger, setup_logging
 
 log = get_logger(__name__)
 
@@ -64,6 +66,7 @@ async def research(request: ResearchRequest):
     Phase 3: will invoke the LangGraph agent and return run_id.
     """
     import uuid
+
     run_id = str(uuid.uuid4())
     log.info("research_requested", run_id=run_id, topic=request.topic)
 
@@ -78,4 +81,5 @@ async def research(request: ResearchRequest):
 # ── Run directly (dev only) ────────────────────────────────────────────────────
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

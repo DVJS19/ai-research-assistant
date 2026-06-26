@@ -5,18 +5,20 @@ The dispatcher validates every LLM-generated tool call against this before execu
 Phase 3: web_search + rag_search + summarise
 Phase 5: each worker agent gets its own subset
 """
-from typing import Any, Callable
+
+from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
 class Tool:
-    name:        str
-    description: str          # LLM uses this to decide when to call
-    handler:     Callable
-    schema:      dict          # JSON Schema for parameter validation
-    idempotent:  bool = True   # safe to retry?
-    timeout_ms:  int  = 10_000
+    name: str
+    description: str  # LLM uses this to decide when to call
+    handler: Callable
+    schema: dict  # JSON Schema for parameter validation
+    idempotent: bool = True  # safe to retry?
+    timeout_ms: int = 10_000
 
 
 # Import handlers (added as each phase is built)
@@ -37,21 +39,21 @@ TOOL_REGISTRY: dict[str, Tool] = {
             "Use for current events, news, product updates, and public information. "
             "Do NOT use for internal company documents — use rag_search instead."
         ),
-        handler=_placeholder_handler,   # replaced in Phase 3
+        handler=_placeholder_handler,  # replaced in Phase 3
         schema={
             "type": "object",
             "properties": {
                 "query": {
                     "type": "string",
-                    "description": "Search query. Be specific. Max 100 characters."
+                    "description": "Search query. Be specific. Max 100 characters.",
                 },
                 "max_results": {
                     "type": "integer",
                     "default": 5,
-                    "description": "Number of results to return. Max 10."
-                }
+                    "description": "Number of results to return. Max 10.",
+                },
             },
-            "required": ["query"]
+            "required": ["query"],
         },
         idempotent=True,
         timeout_ms=8_000,
@@ -63,21 +65,18 @@ TOOL_REGISTRY: dict[str, Tool] = {
             "Use for internal documents, past research, company policies, and domain knowledge. "
             "Returns the most relevant document chunks with confidence scores."
         ),
-        handler=_placeholder_handler,   # replaced in Phase 3
+        handler=_placeholder_handler,  # replaced in Phase 3
         schema={
             "type": "object",
             "properties": {
-                "query": {
-                    "type": "string",
-                    "description": "Natural language search query."
-                },
+                "query": {"type": "string", "description": "Natural language search query."},
                 "top_k": {
                     "type": "integer",
                     "default": 5,
-                    "description": "Number of chunks to return after reranking."
-                }
+                    "description": "Number of chunks to return after reranking.",
+                },
             },
-            "required": ["query"]
+            "required": ["query"],
         },
         idempotent=True,
         timeout_ms=3_000,
@@ -96,10 +95,10 @@ def get_tool_schemas() -> list[dict]:
         {
             "type": "function",
             "function": {
-                "name":        t.name,
+                "name": t.name,
                 "description": t.description,
-                "parameters":  t.schema,
-            }
+                "parameters": t.schema,
+            },
         }
         for t in TOOL_REGISTRY.values()
     ]

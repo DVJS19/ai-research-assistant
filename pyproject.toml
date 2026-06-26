@@ -14,7 +14,7 @@ dependencies = [
     "litellm>=1.40.0",
 
     # Vector DB + reranker
-    "pinecone-client>=3.0.0",
+    "pinecone>=5.0.0",
     "cohere>=5.0.0",
 
     # Embeddings + LLM

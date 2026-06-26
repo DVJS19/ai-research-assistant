@@ -45,3 +45,6 @@ data/raw/
 
 # Docker
 *.override.yml
+
+# TextFiles
+*.txt
