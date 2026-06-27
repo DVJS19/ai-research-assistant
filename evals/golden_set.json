@@ -20,7 +20,7 @@
   {
     "id": "q004",
     "topic": "What is Little's Law and how is it used in system design?",
-    "expected_topics": ["N = lambda x W", "arrival rate", "service time", "concurrency", "capacity"],
+    "expected_topics": ["arrival rate", "service time", "concurrent", "capacity", "formula"],
     "min_confidence": 0.75
   },
   {

@@ -23,8 +23,8 @@ Rules:
 """
 
 # claude-haiku-4-5 pricing
-COST_PER_INPUT_TOKEN  = 0.000001    # $1.00 per 1M input tokens
-COST_PER_OUTPUT_TOKEN = 0.000005    # $5.00 per 1M output tokens
+COST_PER_INPUT_TOKEN = 0.000001  # $1.00 per 1M input tokens
+COST_PER_OUTPUT_TOKEN = 0.000005  # $5.00 per 1M output tokens
 
 
 def _convert_tools_for_anthropic(tool_schemas: list[dict]) -> list[dict]:

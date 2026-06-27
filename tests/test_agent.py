@@ -110,9 +110,7 @@ class TestResearchNode:
         mock_response.stop_reason = resolved_stop_reason
         return mock_response
 
-    def _make_tool_use_block(
-        self, name: str, arguments: dict, block_id: str = "toolu_abc123"
-    ):
+    def _make_tool_use_block(self, name: str, arguments: dict, block_id: str = "toolu_abc123"):
         """Build a fake Anthropic tool_use content block."""
         block = MagicMock()
         block.type = "tool_use"

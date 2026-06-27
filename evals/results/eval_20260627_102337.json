@@ -1,0 +1,187 @@
+{
+  "summary": {
+    "total": 10,
+    "passed": 8,
+    "avg_recall": 0.74,
+    "total_cost": 0.196672
+  },
+  "results": [
+    {
+      "id": "q001",
+      "topic": "What is LangGraph and how does it differ from LangChain?",
+      "status": "completed",
+      "recall": 0.8,
+      "topics_found": [
+        "state management",
+        "nodes",
+        "edges",
+        "checkpointing"
+      ],
+      "topics_missed": [
+        "directed graph"
+      ],
+      "steps_taken": 3,
+      "cost_usd": 0.015228,
+      "trace_id": "8e7d7ecf-5f28-473d-9b3b-7c546e71fb96"
+    },
+    {
+      "id": "q002",
+      "topic": "How does RAG (Retrieval Augmented Generation) work?",
+      "status": "completed",
+      "recall": 0.8,
+      "topics_found": [
+        "retrieval",
+        "embedding",
+        "generation",
+        "context"
+      ],
+      "topics_missed": [
+        "vector search"
+      ],
+      "steps_taken": 4,
+      "cost_usd": 0.018726,
+      "trace_id": "ef533822-b9c5-4a04-8c86-816cb1fd627a"
+    },
+    {
+      "id": "q003",
+      "topic": "What is the ReAct agent pattern?",
+      "status": "completed",
+      "recall": 1.0,
+      "topics_found": [
+        "reason",
+        "act",
+        "observation",
+        "tool",
+        "loop"
+      ],
+      "topics_missed": [],
+      "steps_taken": 4,
+      "cost_usd": 0.017993,
+      "trace_id": "d9b70d40-0a81-4c13-ae71-a1904bba8247"
+    },
+    {
+      "id": "q004",
+      "topic": "What is Little's Law and how is it used in system design?",
+      "status": "completed",
+      "recall": 0.6,
+      "topics_found": [
+        "arrival rate",
+        "concurrency",
+        "capacity"
+      ],
+      "topics_missed": [
+        "N = lambda x W",
+        "service time"
+      ],
+      "steps_taken": 3,
+      "cost_usd": 0.016295,
+      "trace_id": "311144f0-190f-4aea-8b15-7978034780e1"
+    },
+    {
+      "id": "q005",
+      "topic": "What is vLLM and how does PagedAttention work?",
+      "status": "completed",
+      "recall": 1.0,
+      "topics_found": [
+        "inference",
+        "GPU",
+        "KV cache",
+        "continuous batching",
+        "throughput"
+      ],
+      "topics_missed": [],
+      "steps_taken": 3,
+      "cost_usd": 0.016476,
+      "trace_id": "f52d45a4-af13-410e-a9f5-032ce8a8e0c5"
+    },
+    {
+      "id": "q006",
+      "topic": "How does hybrid search combine BM25 and vector search?",
+      "status": "completed",
+      "recall": 1.0,
+      "topics_found": [
+        "keyword",
+        "semantic",
+        "reciprocal rank fusion",
+        "BM25",
+        "embedding"
+      ],
+      "topics_missed": [],
+      "steps_taken": 4,
+      "cost_usd": 0.029647,
+      "trace_id": "3414e369-9e20-43d2-aea9-7092aad437d8"
+    },
+    {
+      "id": "q007",
+      "topic": "What is the difference between availability and fault tolerance?",
+      "status": "completed",
+      "recall": 0.6,
+      "topics_found": [
+        "uptime",
+        "redundancy",
+        "failover"
+      ],
+      "topics_missed": [
+        "recovery time",
+        "availability zone"
+      ],
+      "steps_taken": 3,
+      "cost_usd": 0.01023,
+      "trace_id": "658c293e-6e95-45e4-a2d5-f463d15feee6"
+    },
+    {
+      "id": "q008",
+      "topic": "How does LiteLLM handle model routing and fallbacks?",
+      "status": "completed",
+      "recall": 0.4,
+      "topics_found": [
+        "fallback",
+        "routing"
+      ],
+      "topics_missed": [
+        "YAML config",
+        "model alias",
+        "circuit breaker"
+      ],
+      "steps_taken": 5,
+      "cost_usd": 0.035347,
+      "trace_id": "84795e60-b4a8-4663-92e1-05bf98c49e78"
+    },
+    {
+      "id": "q009",
+      "topic": "What is a confidence score in AI systems and how is it calculated?",
+      "status": "completed",
+      "recall": 0.4,
+      "topics_found": [
+        "threshold",
+        "calibration"
+      ],
+      "topics_missed": [
+        "heuristic",
+        "LLM-as-judge",
+        "composite"
+      ],
+      "steps_taken": 4,
+      "cost_usd": 0.022306,
+      "trace_id": "608933d2-c5c1-4b77-86b6-ac1799fe1861"
+    },
+    {
+      "id": "q010",
+      "topic": "What are Availability Zones in AWS and why are they important?",
+      "status": "completed",
+      "recall": 0.8,
+      "topics_found": [
+        "region",
+        "fault isolation",
+        "multi-AZ",
+        "failover"
+      ],
+      "topics_missed": [
+        "data centre"
+      ],
+      "steps_taken": 3,
+      "cost_usd": 0.014424,
+      "trace_id": "364a244d-07c5-4c17-ba89-6362db34beae"
+    }
+  ]
+}
