@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     # ── LLM providers ─────────────────────────────────────────────────────────
     openai_api_key: str = ""
     anthropic_api_key: str = ""
+    groq_api_key: str = ""
 
     # ── Vector DB ─────────────────────────────────────────────────────────────
     pinecone_api_key: str = ""
@@ -47,8 +48,8 @@ class Settings(BaseSettings):
     agent_max_seconds: int = 300
 
     # ── Model selection ───────────────────────────────────────────────────────
-    worker_model: str = "gpt-4o-mini"
-    synthesis_model: str = "gpt-4o"
+    worker_model: str = "claude-haiku-4-5"
+    synthesis_model: str = "claude-sonnet-4-6"
     fallback_model: str = "gpt-3.5-turbo"
     embedding_model: str = "text-embedding-3-small"
 

@@ -4,13 +4,16 @@ Phase 1: health check + placeholder /research endpoint.
 Phase 3: /research calls the LangGraph agent.
 """
 
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from app.api.routes import router as research_router
 from app.config import settings
+from app.graph import graph as graph_module
 from app.logger import get_logger, setup_logging
 
 log = get_logger(__name__)
@@ -20,8 +23,20 @@ log = get_logger(__name__)
 async def lifespan(app: FastAPI):
     """Startup and shutdown logic."""
     setup_logging()
+
+    # Explicitly push API keys into os.environ so LiteLLM can find them.
+    # pydantic-settings loads .env into settings but not into os.environ automatically.
+    os.environ["GROQ_API_KEY"] = settings.groq_api_key
+    os.environ["OPENAI_API_KEY"] = settings.openai_api_key
+    os.environ["ANTHROPIC_API_KEY"] = settings.anthropic_api_key
     log.info("startup", env=settings.app_env, tracing=settings.langchain_tracing_v2)
+    # Build and cache the LangGraph graph instance.
+    # Done once at startup — shared across all requests.
+    graph_module.graph_instance = await graph_module.build_graph()
+    log.info("graph_ready")
+
     yield
+    await graph_module.close_pool()
     log.info("shutdown")
 
 
@@ -39,11 +54,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ____ Routes _____________________________________________________________
+app.include_router(research_router)
+
 
 # ── Health check ───────────────────────────────────────────────────────────────
 @app.get("/health")
 async def health():
-    return {"status": "ok", "env": settings.app_env}
+    return {
+        "status": "ok",
+        "env": settings.app_env,
+        "graph": "ready" if graph_module.graph_instance else "not initialised",
+    }
 
 
 # ── Research endpoint (Phase 1: placeholder) ──────────────────────────────────

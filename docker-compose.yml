@@ -1,5 +1,3 @@
-version: "3.9"
-
 # Local development services
 # Run: docker compose up -d
 # Then: uv run uvicorn app.main:app --reload
