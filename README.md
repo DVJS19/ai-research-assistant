@@ -2,9 +2,15 @@
 
 A multi-agent AI research system that takes a topic and produces a structured research report by searching the web, querying an internal knowledge base, and synthesising findings using LangGraph, LiteLLM, and Pinecone.
 
+- Cross-referenced findings from web, internal KB, and Wikipedia
+- Cited sources with URLs and document references  
+- Confidence score (0-1) based on source agreement
+- Cost tracking per run (~$0.04 average)
+- Redis cache hit on repeat queries (~100ms vs ~60s)
+
 ## Architecture
 
-```
+
 POST /research
       ↓
   FastAPI + ALB
@@ -27,39 +33,55 @@ POST /research
   └─────────────────────────────────────────┘
       ↓
   JSON report + PDF (S3)
-```
+
 
 ## Tech stack
 
-| Component | Tool | Purpose |
+| Layer | Technology | Purpose |
 |---|---|---|
-| Agent framework | LangGraph | StateGraph, Send API, checkpoint |
-| LLM gateway | LiteLLM | Model routing, circuit breaker, cost tracking |
-| LLM (workers) | GPT-4o-mini | Cost-efficient research tasks |
-| LLM (synthesis) | GPT-4o | High-quality cross-reference and report |
+| Agent framework | LangGraph 1.x | StateGraph, Send API, checkpoint |
+| LLM (workers) | Claude Haiku 4.5 | Fast, cost-efficient research |
+| LLM (synthesis) | Claude Sonnet 4.6 | High-quality cross-reference |
 | Vector DB | Pinecone | Hybrid search on knowledge base |
 | Reranker | Cohere Rerank | Precision improvement on retrieval |
-| Checkpoints | Postgres (RDS) | LangGraph state persistence + crash recovery |
-| Cache | Redis | Prompt cache + hot state |
+| Embeddings | OpenAI text-embedding-3-small | 1536-dim vectors |
+| Web search | Brave Search API | Current web results |
+| Cache | Redis | Exact match cache (TTL 1hr) |
+| Checkpoints | Postgres | LangGraph state + crash recovery |
 | Observability | LangSmith + structlog | Node traces + structured logs |
 | API | FastAPI | Async REST API |
 | Package manager | UV | Fast dependency management |
+
+## Performance
+
+| Metric | Value |
+|---|---|
+| Avg cost per run | ~$0.04 |
+| Cache hit response | < 100ms |
+| Full run time | ~60 seconds |
+| Knowledge base | 85 vectors across 7 PDFs |
+| Golden set recall | 76% (9/10 questions) |
+| Confidence threshold for cache | 0.75 |
 
 ## Quick start
 
 ```bash
 # 1. Clone and setup
-git clone https://github.com/YOUR_USERNAME/ai-research-assistant
+git clone https://github.com/DVJS19/ai-research-assistant
 cd ai-research-assistant
 bash scripts/setup.sh
 
 # 2. Fill in API keys
-vi .env
+cp .env.example .env
+# Edit .env with your keys
 
-# 3. Run
+# 3. Start services
+docker compose up -d
+
+# 4. Run
 uv run uvicorn app.main:app --reload
 
-# 4. Test
+# 5. Test
 curl -X POST http://localhost:8000/research \
   -H "Content-Type: application/json" \
   -d '{"topic": "LangGraph multi-agent patterns"}'
