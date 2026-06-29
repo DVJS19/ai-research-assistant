@@ -15,23 +15,37 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.ingestion.pipeline import ingest_document
+from app.ingestion.pipeline import IngestResult, ingest_document
 from app.logger import get_logger, setup_logging
 
 log = get_logger(__name__)
 
 
-async def ingest_file(path: Path, namespace: str) -> None:
-    """Ingest a single text file."""
-    text = path.read_text(encoding="utf-8", errors="ignore")
+async def ingest_file(path: Path, namespace: str) -> IngestResult | None:
+    """Ingest a single file. Handles .txt, .md, and .pdf."""
+    suffix = path.suffix.lower()
+
+    if suffix == ".pdf":
+        try:
+            import pypdf
+            reader = pypdf.PdfReader(str(path))
+            text = "\n\n".join(
+                page.extract_text()
+                for page in reader.pages
+                if page.extract_text()
+            )
+        except Exception as e:
+            print(f"  Warning: PDF parse failed for {path.name}: {e}")
+            text = path.read_text(encoding="utf-8", errors="ignore")
+    else:
+        text = path.read_text(encoding="utf-8", errors="ignore")
 
     if not text.strip():
         log.warning("empty_file_skipped", path=str(path))
-        return
+        return None
 
-    # Use the file path as the doc_id — ensures idempotency on re-ingest
     doc_id = str(path)
-    source = path.suffix.lstrip(".") or "txt"  # "pdf", "txt", "md" etc.
+    source = suffix.lstrip(".") or "txt"
 
     result = await ingest_document(
         text=text,
@@ -42,10 +56,11 @@ async def ingest_file(path: Path, namespace: str) -> None:
     )
 
     print(
-        f"✓ {path.name}: {result.chunk_count} chunks, "
+        f"  ✓ {path.name}: {result.chunk_count} chunks, "
         f"{result.vectors_upserted} vectors, "
         f"${result.cost_usd:.5f}"
     )
+    return result
 
 
 async def main(source: str, namespace: str) -> None:
@@ -91,7 +106,11 @@ async def main(source: str, namespace: str) -> None:
             print(f"✗ {f.name}: {e}")
 
     print()
-    print("Done.")
+    print(
+        f"Done. {total_chunks} chunks, "
+        f"{total_vectors} vectors, "
+        f"${total_cost_usd:.5f} total cost"
+    )
 
 
 if __name__ == "__main__":

@@ -48,6 +48,7 @@ dependencies = [
     "structlog>=24.0.0",       # structured JSON logging
     "tenacity>=8.3.0",         # retry logic
     "jsonschema>=4.22.0",
+    "pypdf>=4.0.0",
 ]
 
 [dependency-groups]

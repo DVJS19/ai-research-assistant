@@ -15,7 +15,7 @@ RELEVANCE_THRESHOLD = 0.4
 async def rag_search(
     query: str,
     top_k: int = 5,
-    namespace: str = "default",
+    namespace: str = settings.pinecone_namespace,
 ) -> dict:
     """
     Hybrid RAG search: embed query → Pinecone ANN → Cohere rerank.

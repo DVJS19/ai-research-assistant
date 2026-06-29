@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     pinecone_api_key: str = ""
     pinecone_index_name: str = "research-assistant"
     pinecone_environment: str = "us-east-1-aws"
+    pinecone_namespace: str = "dj-multi-agent"
 
     # ── Reranker ──────────────────────────────────────────────────────────────
     cohere_api_key: str = ""
