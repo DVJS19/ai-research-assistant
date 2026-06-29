@@ -1,9 +1,10 @@
-import json
+﻿import json
 import uuid
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from app.cache import get_cached_result, set_cached_result
 from app.graph import graph as graph_module
 from app.graph.state import ResearchState
 from app.logger import get_logger
@@ -29,6 +30,7 @@ class ResearchResponse(BaseModel):
     steps_taken: int
     cost_usd: float
     errors: list[str]
+    cached: bool = False
 
 
 @router.post("", response_model=ResearchResponse)
@@ -39,6 +41,9 @@ async def run_research(request: ResearchRequest) -> ResearchResponse:
     Returns the full research result synchronously.
     For long-running topics, consider adding a background task pattern.
     """
+    # ── Cache check — return immediately if topic was recently researched ──────
+    cached = await get_cached_result(request.topic)
+
     if graph_module.graph_instance is None:
         raise HTTPException(
             status_code=503,
@@ -47,9 +52,17 @@ async def run_research(request: ResearchRequest) -> ResearchResponse:
 
     run_id = str(uuid.uuid4())
     trace_id = get_trace_id()  # set by middleware for this request
+
     log.info(
         "research_request_received", run_id=run_id, trace_id=trace_id, topic=request.topic[:80]
     )
+
+    if cached:
+        log.info("serving_from_cache", run_id=run_id, trace_id=trace_id)
+        cached["run_id"] = run_id  # fresh run_id for this request
+        cached["trace_id"] = trace_id  # fresh trace_id
+        cached["cached"] = True
+        return ResearchResponse(**cached)
 
     # Initial state — LangGraph merges this with the TypedDict defaults
     initial_state: ResearchState = {
@@ -66,6 +79,7 @@ async def run_research(request: ResearchRequest) -> ResearchResponse:
         "step_count": 0,
         "tokens_used": 0,
         "cost_usd": 0.0,
+        "overall_confidence": 0.0,
     }
 
     # thread_id isolates this run's checkpoints from all other runs
@@ -89,27 +103,38 @@ async def run_research(request: ResearchRequest) -> ResearchResponse:
         raise HTTPException(status_code=500, detail=f"Agent failed: {str(e)}")
 
     # Extract the final answer — the last assistant message with no tool calls
+    # Always get messages (may be empty in Phase 5)
     messages = final_state.get("messages", [])
-    answer = ""
-    for msg in reversed(messages):
-        if msg.get("role") == "assistant" and not msg.get("tool_calls"):
-            answer = msg.get("content", "")
-            break
 
-    # Extract sources from tool result messages
-    sources = []
-    for msg in messages:
-        if msg.get("role") == "tool":
-            try:
-                content = json.loads(msg.get("content", "{}"))
-                results = content.get("results", [])
-                for r in results:
-                    if r.get("url"):
-                        sources.append({"url": r["url"], "title": r.get("title", "")})
-                    elif r.get("doc_id"):
-                        sources.append({"doc_id": r["doc_id"], "score": r.get("score", 0)})
-            except (json.JSONDecodeError, AttributeError):
-                continue
+    # Phase 5: answer lives in report from synthesis_node
+    # Phase 3/4 fallback: extract from messages
+    report = final_state.get("report")
+    if report and report.get("text"):
+        answer = report["text"]
+    else:
+        answer = ""
+        for msg in reversed(messages):
+            if msg.get("role") == "assistant" and not msg.get("tool_calls"):
+                answer = msg.get("content", "")
+                break
+
+    # Phase 5: sources live in report
+    # Phase 3/4 fallback: extract from tool result messages
+    if report and report.get("sources"):
+        sources = report["sources"]
+    else:
+        sources = []
+        for msg in messages:
+            if msg.get("role") == "tool":
+                try:
+                    content = json.loads(msg.get("content", "{}"))
+                    for r in content.get("results", []):
+                        if r.get("url"):
+                            sources.append({"url": r["url"], "title": r.get("title", "")})
+                        elif r.get("doc_id"):
+                            sources.append({"doc_id": r["doc_id"], "score": r.get("score", 0)})
+                except (json.JSONDecodeError, AttributeError):
+                    continue
     steps_taken = final_state.get("step_count", 0)
     tokens_used = final_state.get("tokens_used", 0)
     cost_usd = final_state.get("cost_usd", 0.0)
@@ -125,6 +150,22 @@ async def run_research(request: ResearchRequest) -> ResearchResponse:
         error_count=len(errors),
         status=status,
     )
+
+    # Write to cache if confidence is sufficient
+    overall_confidence = final_state.get("overall_confidence", 0.0)
+    await set_cached_result(
+        topic=request.topic,
+        result={
+            "status": status,
+            "answer": answer or "No answer generated.",
+            "sources": sources,
+            "steps_taken": steps_taken,
+            "cost_usd": round(cost_usd, 6),
+            "errors": errors,
+        },
+        confidence=overall_confidence,
+    )
+
     log.info(
         "research_request_completed",
         run_id=run_id,
@@ -142,6 +183,7 @@ async def run_research(request: ResearchRequest) -> ResearchResponse:
         steps_taken=steps_taken,
         cost_usd=round(cost_usd, 6),
         errors=errors,
+        cached=False,
     )
 
 

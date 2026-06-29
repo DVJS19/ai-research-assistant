@@ -1,3 +1,9 @@
+# Kept as single-agent fallback. To revert to single agent, replace
+# graph.py's node registrations with:
+#   builder.add_node("research", research_node)
+#   builder.add_edge(START, "research")
+#   builder.add_edge("research", END)
+
 import json
 
 import anthropic

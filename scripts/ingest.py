@@ -28,12 +28,9 @@ async def ingest_file(path: Path, namespace: str) -> IngestResult | None:
     if suffix == ".pdf":
         try:
             import pypdf
+
             reader = pypdf.PdfReader(str(path))
-            text = "\n\n".join(
-                page.extract_text()
-                for page in reader.pages
-                if page.extract_text()
-            )
+            text = "\n\n".join(page.extract_text() for page in reader.pages if page.extract_text())
         except Exception as e:
             print(f"  Warning: PDF parse failed for {path.name}: {e}")
             text = path.read_text(encoding="utf-8", errors="ignore")
@@ -106,11 +103,7 @@ async def main(source: str, namespace: str) -> None:
             print(f"✗ {f.name}: {e}")
 
     print()
-    print(
-        f"Done. {total_chunks} chunks, "
-        f"{total_vectors} vectors, "
-        f"${total_cost_usd:.5f} total cost"
-    )
+    print(f"Done. {total_chunks} chunks, {total_vectors} vectors, ${total_cost_usd:.5f} total cost")
 
 
 if __name__ == "__main__":

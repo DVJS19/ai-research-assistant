@@ -53,6 +53,7 @@ class Settings(BaseSettings):
     synthesis_model: str = "claude-sonnet-4-6"
     fallback_model: str = "gpt-3.5-turbo"
     embedding_model: str = "text-embedding-3-small"
+    synthesis_model: str = "claude-sonnet-4-6"
 
     # ── App ───────────────────────────────────────────────────────────────────
     app_env: str = "development"

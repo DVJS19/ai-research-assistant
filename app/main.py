@@ -11,6 +11,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import router as research_router
+from app.cache import close_cache, setup_cache
 from app.config import settings
 from app.graph import graph as graph_module
 from app.logger import get_logger, setup_logging
@@ -39,11 +40,17 @@ async def lifespan(app: FastAPI):
 
     # Create run_metrics table if it doesn't exist
     await setup_metrics_table(settings.database_url)
+    try:
+        await setup_cache()
+    except Exception as e:
+        log.warning("cache_setup_failed", error=str(e))
+        log.warning("continuing_without_cache")
 
     yield
 
     await graph_module.close_pool()
     await close_metrics_pool()
+    await close_cache()
     log.info("shutdown")
 
 

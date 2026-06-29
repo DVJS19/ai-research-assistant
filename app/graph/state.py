@@ -33,6 +33,7 @@ class ResearchState(TypedDict):
     # ── Synthesis output ──────────────────────────────────────────────────────
     report: dict | None
     confidence_scores: dict[str, float]
+    overall_confidence: float | None  # drives HITL and caching decisions
 
     # ── Errors (append-only — safe for parallel workers) ─────────────────────
     errors: Annotated[list[str], operator.add]
